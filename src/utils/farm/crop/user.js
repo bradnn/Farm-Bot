@@ -102,9 +102,9 @@ module.exports = {
             });
         }
         x.inventory.crops[crop] = x.inventory.crops[crop] - amount; // Removes crops from inventory
-        x.farm.crops[crop] = x.farm.crops[crop] + amount; // Adds amount to planted crops
+        x.farms.crops[crop] = x.farms.crops[crop] + amount; // Adds amount to planted crops
         x.save(); // Save to database
-        return x.farm.crops[crop]; // Returns new amount
+        return x.farms.crops[crop]; // Returns new amount
     },
     cropPlantAll: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
@@ -119,17 +119,17 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../Games/Crop/Shop/Prices/farmPrices"); // Gets obj of items
+        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
         var cropItems = Object.keys(cropPrices.prices); // Returns only item names in array
         var itemPrices = { ...cropItems}; // Useless but like still here
         var plantedCount = 0; 
         for(crop in itemPrices) {
             plantedCount = plantedCount + x.inventory.crops[itemPrices[crop]]; // Adds to amount planted
-            x.farms.crops[itemPrices[crop]] = x.inventory.crops[itemPrices[crop]]; // Adds to planted crops
+            x.farms.crops[itemPrices[crop]] = x.farms.crops[itemPrices[crop]] + x.inventory.crops[itemPrices[crop]]; // Adds to planted crops
             x.inventory.crops[itemPrices[crop]] = 0; // Clears crop inventory
         }
         x.save(); // Save to database
-        return;
+        return plantedCount;
     },
     cropSellAll: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
@@ -144,7 +144,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../Games/Crop/Shop/Prices/farmPrices"); // Gets obj of items
+        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
         var cropItems = Object.keys(cropPrices.prices); // Returns only item names in array
         var itemPrices = { ...cropItems}; // Useless but like still here
         var moneyToAdd = 0;
@@ -155,6 +155,31 @@ module.exports = {
         x.econ.balance = x.econ.balance + moneyToAdd; // Adds money to balance
         x.save(); // Save to database
         return;
+    },
+    cropHarvest: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
+        var cropItems = Object.keys(cropPrices.prices); // Returns only item names in array
+        var itemPrices = { ...cropItems}; // Useless but like still here
+        var harvestCount = 0; 
+        for(crop in itemPrices) {
+            var amount = Math.floor(Math.ceil(x.farms.crops[itemPrices[crop]] * 0.25));
+            harvestCount = harvestCount + amount; // Adds to amount planted
+            x.inventory.crops[itemPrices[crop]] = x.inventory.crops[itemPrices[crop]] + amount; // Adds to inventory crops
+        }
+        x.save(); // Save to database
+        return harvestCount;
     },
     cropAddFertilize: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
@@ -193,6 +218,25 @@ module.exports = {
         }
         x.save(); // Save to database
         return x;
+    },
+    cropGetFertilized: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farms.crops.fertilized == true) {
+            return true;
+        } else {
+            return false;
+        }
     },
     cropAddProtected: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
@@ -256,7 +300,41 @@ module.exports = {
         }
         return;
     },
-    cropAddScarecrowUser: async function (userID) {
+    cropGetTractors: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        return x.inventory.items.tractor;
+    },
+    cropGetProtected: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farms.crops.protected == true) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    cropAddScarecrowUse: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -280,6 +358,21 @@ module.exports = {
         }
         return;
     },
+    cropGetScarecrows: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        return x.inventory.items.scarecrow;
+    },
     cropGetFarmCount: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
@@ -293,7 +386,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../Games/Crop/Shop/Prices/farmPrices"); // Gets prices from obj
+        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets prices from obj
         var cropItems = Object.keys(cropPrices.prices); // Gets item names only
         var itemPrices = { ...cropItems}; // Does nothing but like
         var amount = 0; 
@@ -316,7 +409,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../Games/Crop/Shop/Prices/farmPrices"); // Gets prices from obj
+        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets prices from obj
         var cropItems = Object.keys(cropPrices.prices); // Gets item names only
         var itemPrices = { ...cropItems}; // Does nothing but like
         var amount = 0;

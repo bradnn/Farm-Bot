@@ -153,7 +153,7 @@ const profileSchema = mongoose.Schema({
         }
     },
     cooldowns: {
-            cropHarvset: {
+            cropHarvest: {
                 type: Date,
                 default: 0
             },
