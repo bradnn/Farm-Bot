@@ -2,7 +2,7 @@ const { cropCommandHandler } = require("../handlers/cropFarm")
 
 module.exports = class {
     constructor() {
-        this.cmd = 'help'
+        this.cmd = 'crops'
         this.aliases = ['crop', 'farm']
     }
 

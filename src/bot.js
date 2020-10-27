@@ -1,5 +1,5 @@
 const { FarmBot } = require('./structures/FarmBot.js');
-const Config = require('../config-test.js');
+const Config = require('../config.js');
 
 const mongoose = require('mongoose');
 mongoose.connect(Config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
