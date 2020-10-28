@@ -21,14 +21,14 @@ const handleInventoryCommand = async (client, msg, args) => {
                 var itemList = ``
 
                 for(crop in farmPrices.prices) {
-                    cropList = cropList + `${farmPrices.emojis[crop]} ${crop} **-** ${profile.inventory.crops[crop]}\n`
+                    cropList = cropList + `${farmPrices.emojis[crop]} ${crop} **-** ${profile.inventory.farms.crops[crop]}\n`
                 }
 
                 for(item in toolPrice.prices) {
-                    itemList = itemList + `${toolPrice.emojis[item]} ${item} **-** ${profile.inventory.items[item]}\n`
+                    itemList = itemList + `${toolPrice.emojis[item]} ${item} **-** ${profile.inventory.items.farmTools.crops[item]}\n`
                 }
 
-                const inventoryEmbed = {
+                const cropEmbed = {
                     author: {
                         name: `${user.username}'s inventory`,
                         icon_url: user.avatarURL
@@ -45,7 +45,42 @@ const handleInventoryCommand = async (client, msg, args) => {
                     ]
                 }
             
-                msg.channel.createMessage({embed: inventoryEmbed});
+                msg.channel.createMessage({embed: cropEmbed});
+                return;
+            case "trees":
+            case "tree":
+                var farmPrices = require("../../handlers/treeFarm/Shop/Prices/farmPrices");
+                var toolPrice = require("../../handlers/treeFarm/Shop/Prices/toolPrices");
+
+                var cropList = ``
+                var itemList = ``
+
+                for(crop in farmPrices.prices) {
+                    cropList = cropList + `${farmPrices.emojis[crop]} ${crop} **-** ${profile.inventory.farms.trees[crop]}\n`
+                }
+
+                for(item in toolPrice.prices) {
+                    itemList = itemList + `${toolPrice.emojis[item]} ${item} **-** ${profile.inventory.items.farmTools.trees[item]}\n`
+                }
+
+                const treeEmbed = {
+                    author: {
+                        name: `${user.username}'s inventory`,
+                        icon_url: user.avatarURL
+                    },
+                    fields: [
+                        {
+                            name: `Trees`,
+                            value: `${cropList}`
+                        },
+                        {
+                            name: `Items`,
+                            value: `${itemList}`
+                        }
+                    ]
+                }
+            
+                msg.channel.createMessage({embed: treeEmbed});
                 return;
         }
         return;

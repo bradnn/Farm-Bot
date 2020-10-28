@@ -3,11 +3,11 @@ const { formatMoney } = require("../../format/moneyUtils");
 const { getProfile } = require("../../user/user");
 const { addItem, delItem, getItem } = require("../items/items");
 
-const handleCropBuy = async (user, item, amount, msg) => {
+const handleTreeBuy = async (user, item, amount, msg) => {
     var profile = await getProfile(user.id);
 
-    var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices");
-    var toolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
+    var cropPrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices");
+    var toolPrices = require("../../../handlers/treeFarm/Shop/Prices/toolPrices");
 
     var itemPrices = { ...cropPrices.prices, ...toolPrices.prices};
 
@@ -36,9 +36,9 @@ Type \`yes\` to confirm the purchase.`);
     }
 }
 
-const handleCropSell = async (user, item, amount, msg) => {
-    var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices");
-    var toolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
+const handleTreeSell = async (user, item, amount, msg) => {
+    var cropPrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices");
+    var toolPrices = require("../../../handlers/treeFarm/Shop/Prices/toolPrices");
 
     var itemPrices = { ...cropPrices.prices, ...toolPrices.prices};
 
@@ -68,4 +68,4 @@ Type \`yes\` to confirm the purchase.`);
     }
 }
 
-module.exports = { handleCropBuy, handleCropSell };
+module.exports = { handleTreeBuy, handleTreeSell };

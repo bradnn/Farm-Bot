@@ -19,56 +19,86 @@ const profileSchema = mongoose.Schema({
         }
     },
     inventory: {
-        crops: {
-            wheat: {
-                type: Number,
-                default: 0
+        farms: {
+            crops: {
+                wheat: {
+                    type: Number,
+                    default: 0
+                },
+                melon: {
+                    type: Number,
+                    default: 0
+                },
+                pumpkin: {
+                    type: Number,
+                    default: 0
+                },
+                strawberry: {
+                    type: Number,
+                    default: 0
+                },
+                coffee: {
+                    type: Number,
+                    default: 0
+                },
+                peach: {
+                    type: Number,
+                    default: 0
+                },
+                apple: {
+                    type: Number,
+                    default: 0
+                }
             },
-            melon: {
-                type: Number,
-                default: 0
-            },
-            pumpkin: {
-                type: Number,
-                default: 0
-            },
-            strawberry: {
-                type: Number,
-                default: 0
-            },
-            coffee: {
-                type: Number,
-                default: 0
-            },
-            peach: {
-                type: Number,
-                default: 0
-            },
-            apple: {
-                type: Number,
-                default: 0
+            trees: {
+                maple: {
+                    type: Number,
+                    default: 0
+                },
+                pine: {
+                    type: Number,
+                    default: 0
+                },
+                fir: {
+                    type: Number,
+                    default: 0
+                },
+                aspen: {
+                    type: Number,
+                    default: 0
+                },
+                oak: {
+                    type: Number,
+                    default: 0
+                },
+                birch: {
+                    type: Number,
+                    default: 0
+                }
             }
         },
         items: {
-            scarecrow: {
-                type: Number,
-                default: 0
-            },
-            tractor: {
-                type: Number,
-                default: 0
-            },
-            toolbox: {
-                type: Number,
-                default: 0
-            },
-            toolshed: {
-                type: Number,
-                default: 0
-            },
-            barn: {
-                type: Number,
-                default: 0
+            farmTools: {
+                crops: {
+                    scarecrow: {
+                        type: Number,
+                        default: 0
+                    },
+                    tractor: {
+                        type: Number,
+                        default: 0
+                    }
+                },
+                trees: {
+                    chainsaw: {
+                        type: Number,
+                        default: 0
+                    },
+                    bugspray: {
+                        type: Number,
+                        default: 0
+                    }
+                }
             }
         }
     },
@@ -126,6 +156,18 @@ const profileSchema = mongoose.Schema({
             }
         },
         trees: {
+            land: {
+                type: Number,
+                default: 0
+            },
+            sawed: {
+                type: Boolean,
+                default: 0
+            },
+            sprayed: {
+                type: Boolean,
+                default: 0
+            },
             maple: {
                 type: Number,
                 default: 0

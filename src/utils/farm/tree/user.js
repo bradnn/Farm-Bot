@@ -1,7 +1,7 @@
 const profile = require("../../../schemas/ProfileSchema");
 
 module.exports = {
-    cropGetFarm: async function (userID) {
+    treeGetFarm: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -14,9 +14,9 @@ module.exports = {
                 userID: userID
             });
         };
-        return x.farms.crops; // Returns planted crops
+        return x.farms.trees; // Returns planted trees
     },
-    cropGetCrops: async function (userID) {
+    treeGetCrops: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) {
             if (err) throw err; // Throwing if error
             if(res) {
@@ -29,9 +29,9 @@ module.exports = {
                 userID: userID
             });
         }
-        return x.inventory.farms.crops; // Returns inventory crops
+        return x.inventory.farms.trees; // Returns inventory trees
     },
-    cropDelPlants: async function (userID, type, amount) {
+    treeDelPlants: async function (userID, type, amount) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -44,15 +44,15 @@ module.exports = {
                 userID: userID
             });
         }
-        x.farms.crops[type] = x.farms.crops[type] - amount; // Deletes amount from their crops
-        if(x.farms.crops[type] < 0) { // If plants is under 0
-            x.farms.crops[type] = 0; // Set plants to 0 to prevent negatives
+        x.farms.trees[type] = x.farms.trees[type] - amount; // Deletes amount from their trees
+        if(x.farms.trees[type] < 0) { // If plants is under 0
+            x.farms.trees[type] = 0; // Set plants to 0 to prevent negatives
         }
         x.save(); // Save to database
 
-        return x.farms.crops; // Returns farm crops
+        return x.farms.trees; // Returns trees crops
     },
-    cropAddCrops: async function (userID, crops) {
+    treeAddTrees: async function (userID, trees) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -65,31 +65,28 @@ module.exports = {
                 userID: userID
             });
         }
-        if(crops.wheat) { // If provided obj has wheat
-            x.inventory.farms.crops.wheat = x.inventory.farms.crops.wheat + crops.wheat;
+        if(trees.maple) { // If provided obj has maple
+            x.inventory.farms.trees.maple = x.inventory.farms.trees.maple + trees.maple;
         }
-        if(crops.melon) { // If provided obj has melon
-            x.inventory.farms.crops.melon = x.inventory.farms.crops.melon + crops.melon;
+        if(trees.pine) { // If provided obj has pine
+            x.inventory.farms.trees.pine = x.inventory.farms.trees.pine + trees.pine;
         }
-        if(crops.pumpkin) { // If provided obj has pumpkin
-            x.inventory.farms.crops.pumpkin = x.inventory.farms.crops.pumpkin + crops.pumpkin;
+        if(trees.fir) { // If provided obj has fir
+            x.inventory.farms.trees.fir = x.inventory.farms.trees.fir + trees.fir;
         }
-        if(crops.strawberry) { // If provided obj has strawberry
-            x.inventory.farms.crops.strawberry = x.inventory.farms.crops.strawberry + crops.strawberry;
+        if(trees.aspen) { // If provided obj has aspen
+            x.inventory.farms.trees.aspen = x.inventory.farms.trees.aspen + trees.aspen;
         }
-        if(crops.coffee) { // If provided obj has coffee
-            x.inventory.farms.crops.coffee = x.inventory.farms.crops.coffee + crops.coffee;
+        if(trees.oak) { // If provided obj has oak
+            x.inventory.farms.trees.oak = x.inventory.farms.trees.oak + trees.oak;
         }
-        if(crops.peach) { // If provided obj has peach
-            x.inventory.farms.crops.peach = x.inventory.farms.crops.peach + crops.peach;
-        }
-        if(crops.apple) { // If provided obj has apple
-            x.inventory.farms.crops.apple = x.inventory.farms.crops.apple + crops.apple;
+        if(trees.birch) { // If provided obj has birch
+            x.inventory.farms.trees.birch = x.inventory.farms.trees.birch + trees.birch;
         }
         x.save(); // Save to database
-        return crops.wheat + crops.melon + crops.pumpkin + crops.strawberry + crops.coffee + crops.peach + crops.apple; // Returns all items added together
+        return trees.maple + trees.pine + trees.fir + trees.aspen + trees.oak + trees.birch; // Returns all items added together
     },
-    cropPlant: async function (userID, crop, amount) {
+    treePlant: async function (userID, tree, amount) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -101,12 +98,12 @@ module.exports = {
                 userID: userID
             });
         }
-        x.inventory.farms.crops[crop] = x.inventory.farms.crops[crop] - amount; // Removes crops from inventory
-        x.farms.crops[crop] = x.farms.crops[crop] + amount; // Adds amount to planted crops
+        x.inventory.farms.trees[tree] = x.inventory.farms.trees[tree] - amount; // Removes trees from inventory
+        x.farms.trees[tree] = x.farms.trees[tree] + amount; // Adds amount to planted crops
         x.save(); // Save to database
-        return x.farms.crops[crop]; // Returns new amount
+        return x.farms.trees[tree]; // Returns new amount
     },
-    cropPlantAll: async function (userID) {
+    treePlantAll: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -119,19 +116,19 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
-        var cropItems = Object.keys(cropPrices.prices); // Returns only item names in array
-        var itemPrices = { ...cropItems}; // Useless but like still here
+        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices"); // Gets obj of items
+        var treeItems = Object.keys(treePrices.prices); // Returns only item names in array
+        var itemPrices = { ...treeItems}; // Useless but like still here
         var plantedCount = 0; 
-        for(crop in itemPrices) {
-            plantedCount = plantedCount + x.inventory.farms.crops[itemPrices[crop]]; // Adds to amount planted
-            x.farms.crops[itemPrices[crop]] = x.farms.crops[itemPrices[crop]] + x.inventory.farms.crops[itemPrices[crop]]; // Adds to planted crops
-            x.inventory.farms.crops[itemPrices[crop]] = 0; // Clears crop inventory
+        for(tree in itemPrices) {
+            plantedCount = plantedCount + x.inventory.farms.trees[itemPrices[tree]]; // Adds to amount planted
+            x.farms.trees[itemPrices[tree]] = x.farms.trees[itemPrices[tree]] + x.inventory.farms.trees[itemPrices[tree]]; // Adds to planted crops
+            x.inventory.farms.trees[itemPrices[tree]] = 0; // Clears crop inventory
         }
         x.save(); // Save to database
         return plantedCount;
     },
-    cropSellAll: async function (userID) {
+    treeSellAll: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -144,19 +141,19 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
-        var cropItems = Object.keys(cropPrices.prices); // Returns only item names in array
-        var itemPrices = { ...cropItems}; // Useless but like still here
+        var treePrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
+        var treeItems = Object.keys(treePrices.prices); // Returns only item names in array
+        var itemPrices = { ...treeItems}; // Useless but like still here
         var moneyToAdd = 0;
-        for(crop in itemPrices) {
-            moneyToAdd = moneyToAdd + cropPrices.prices[itemPrices[crop]] * x.inventory.farms.crops[itemPrices[crop]]; // Multiplies price by amount in inventory
-            x.inventory.farms.crops[itemPrices[crop]] = 0; // Clears inventory crop;
+        for(tree in itemPrices) {
+            moneyToAdd = moneyToAdd + cropPrices.prices[itemPrices[tree]] * x.inventory.farms.trees[itemPrices[tree]]; // Multiplies price by amount in inventory
+            x.inventory.farms.trees[itemPrices[tree]] = 0; // Clears inventory crop;
         }
         x.econ.balance = x.econ.balance + moneyToAdd; // Adds money to balance
         x.save(); // Save to database
         return;
     },
-    cropHarvest: async function (userID) {
+    treeHarvest: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -169,114 +166,19 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
-        var cropItems = Object.keys(cropPrices.prices); // Returns only item names in array
-        var itemPrices = { ...cropItems}; // Useless but like still here
+        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices"); // Gets obj of items
+        var treeItems = Object.keys(treePrices.prices); // Returns only item names in array
+        var itemPrices = { ...treeItems}; // Useless but like still here
         var harvestCount = 0; 
-        for(crop in itemPrices) {
-            var amount = Math.floor(Math.ceil(x.farms.crops[itemPrices[crop]] * 0.25));
+        for(tree in itemPrices) {
+            var amount = Math.floor(Math.ceil(x.farms.trees[itemPrices[tree]] * 0.25));
             harvestCount = harvestCount + amount; // Adds to amount planted
-            x.inventory.farms.crops[itemPrices[crop]] = x.inventory.farms.crops[itemPrices[crop]] + amount; // Adds to inventory crops
+            x.inventory.farms.trees[itemPrices[tree]] = x.inventory.farms.trees[itemPrices[tree]] + amount; // Adds to inventory crops
         }
         x.save(); // Save to database
         return harvestCount;
     },
-    cropAddFertilize: async function (userID) {
-        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
-            if (err) throw err; // Throwing if error
-            if(res) {
-                return res; // Letting x = obj;
-            }
-        })
-
-        if(!x) { // If user obj didnt exist
-            x = await profile.create({ // Creating profile obj
-                userID: userID
-            });
-        }
-        if(x.farm.crops.fertilized == false) { // if the farm isnt fertilized
-            x.farm.crops.fertilized = true; // fertilize farm
-        }
-        x.save(); // Save to database
-        return x;
-    },
-    cropDelFertilize: async function (userID) {
-        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
-            if (err) throw err; // Throwing if error
-            if(res) {
-                return res; // Letting x = obj;
-            }
-        })
-
-        if(!x) { // If user obj didnt exist
-            x = await profile.create({ // Creating profile obj
-                userID: userID
-            });
-        }
-        if(x.farm.crops.fertilized == true) { // if the farm is fertilized
-            x.farm.crops.fertilized = false; // unfertilize farm
-        }
-        x.save(); // Save to database
-        return x;
-    },
-    cropGetFertilized: async function (userID) {
-        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
-            if (err) throw err; // Throwing if error
-            if(res) {
-                return res; // Letting x = obj;
-            }
-        })
-
-        if(!x) { // If user obj didnt exist
-            x = await profile.create({ // Creating profile obj
-                userID: userID
-            });
-        }
-        if(x.farms.crops.fertilized == true) {
-            return true;
-        } else {
-            return false;
-        }
-    },
-    cropAddProtected: async function (userID) {
-        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
-            if (err) throw err; // Throwing if error
-            if(res) {
-                return res; // Letting x = obj;
-            }
-        })
-
-        if(!x) { // If user obj didnt exist
-            x = await profile.create({ // Creating profile obj
-                userID: userID
-            });
-        }
-        if(x.farm.crops.protected == false) { // if the farm isnt protected
-            x.farm.crops.protected = true; // protect farm
-        }
-        x.save();
-        return x;
-    },
-    cropDelProtected: async function (userID) {
-        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
-            if (err) throw err; // Throwing if error
-            if(res) {
-                return res; // Letting x = obj;
-            }
-        })
-
-        if(!x) { // If user obj didnt exist
-            x = await profile.create({ // Creating profile obj
-                userID: userID
-            });
-        }
-        if(x.farm.crops.protected == true) { // if the farm is protected
-            x.farm.crops.protected = false; // unprotect farm
-        }
-        x.save();
-        return x;
-    },
-    cropAddTractorUse: async function (userID) {
+    treeAddSawUse: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -290,17 +192,17 @@ module.exports = {
             });
         }
         if(x.uses.tractor >= 5) {
-            x.inventory.items.farmTools.tractor = x.inventory.items.farmTools.tractor - 1; // Remove tractor from inventory
-            x.uses.tractor = 0; // Resets tractor uses
+            x.inventory.items.farmTools.trees.chainsaw = x.inventory.items.farmTools.trees.chainsaw - 1; // Remove tractor from inventory
+            x.uses.chainsaw = 0; // Resets tractor uses
             x.save(); // Save to database
             return "broke"; // Returns broke
         } else {
-            x.uses.tractor = x.uses.tractor + 1; // Adds tractor use
+            x.uses.chainsaw = x.uses.chainsaw + 1; // Adds tractor use
             x.save(); // Save to database
         }
         return;
     },
-    cropGetTractors: async function (userID) {
+    treeGetSaws: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -313,9 +215,9 @@ module.exports = {
                 userID: userID
             });
         }
-        return x.inventory.items.farmTools.tractor;
+        return x.inventory.items.farmTools.trees.chainsaw;
     },
-    cropGetProtected: async function (userID) {
+    treeAddSawed: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -328,13 +230,108 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.farms.crops.protected == true) {
+        if(x.farm.trees.sawed == false) { // if the farm isnt sawed
+            x.farm.trees.sawed = true; // saw trees
+        }
+        x.save(); // Save to database
+        return x;
+    },
+    treeDelSawed: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farm.trees.sawed == true) { // if the farm is sawed
+            x.farm.trees.sawed = false; // unsaw? farm
+        }
+        x.save(); // Save to database
+        return x;
+    },
+    treeGetSawed: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farms.trees.sawed == true) {
             return true;
         } else {
             return false;
         }
     },
-    cropAddScarecrowUse: async function (userID) {
+    treeAddSprayed: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farm.trees.sprayed == false) { // if the farm isnt sprayed
+            x.farm.trees.sprayed = true; // spray farm
+        }
+        x.save();
+        return x;
+    },
+    treeDelSprayed: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farm.trees.sprayed == true) { // if the farm is sprayed
+            x.farm.trees.sprayed = false; // unspray farm
+        }
+        x.save();
+        return x;
+    },
+    treeGetSprayed: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farms.trees.sprayed == true) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    treeAddSprayUse: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -348,17 +345,17 @@ module.exports = {
             });
         }
         if(x.uses.scarecrow >= 5) {
-            x.inventory.items.farmTools.scarecrow = x.inventory.items.farmTools.scarecrow - 1; // Removes 1 scarecrow from inventory
-            x.uses.scarecrow = 0; // Resets uses
+            x.inventory.items.farmTools.trees.sprayed = x.inventory.items.farmTools.trees.sprayed - 1; // Removes 1 scarecrow from inventory
+            x.uses.bugspray = 0; // Resets uses
             x.save(); // Save to database
             return "broke"; // Returns broke
         } else {
-            x.uses.scarecrow = x.uses.scarecrow + 1; // Adds scarecrow use
+            x.uses.bugspray = x.uses.bugspray + 1; // Adds scarecrow use
             x.save(); // Save to database
         }
         return;
     },
-    cropGetScarecrows: async function (userID) {
+    treeGetSpray: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -371,9 +368,9 @@ module.exports = {
                 userID: userID
             });
         }
-        return x.inventory.items.farmTools.scarecrow;
+        return x.inventory.items.farmTools.trees.sprayed;
     },
-    cropGetFarmCount: async function (userID) {
+    treeGetFarmCount: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -386,17 +383,17 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets prices from obj
-        var cropItems = Object.keys(cropPrices.prices); // Gets item names only
-        var itemPrices = { ...cropItems}; // Does nothing but like
+        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices"); // Gets prices from obj
+        var treeItems = Object.keys(treePrices.prices); // Gets item names only
+        var itemPrices = { ...treeItems}; // Does nothing but like
         var amount = 0; 
 
-        for(crop in itemPrices) {
-            amount = amount + x.farms.crops[itemPrices[crop]]; // Adds to amount for every planted crop
+        for(tree in itemPrices) {
+            amount = amount + x.farms.trees[itemPrices[tree]]; // Adds to amount for every planted crop
         }
         return amount;
     },
-    cropGetInvenCount: async function (userID) {
+    treeGetInvenCount: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -409,13 +406,13 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets prices from obj
-        var cropItems = Object.keys(cropPrices.prices); // Gets item names only
-        var itemPrices = { ...cropItems}; // Does nothing but like
+        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices"); // Gets prices from obj
+        var treeItems = Object.keys(treePrices.prices); // Gets item names only
+        var itemPrices = { ...treeItems}; // Does nothing but like
         var amount = 0;
 
-        for(crop in itemPrices) {
-            amount = amount + x.inventory.farms.crops[itemPrices[crop]]; // Adds to amount for every plant in inventory
+        for(tree in itemPrices) {
+            amount = amount + x.inventory.farms.trees[itemPrices[tree]]; // Adds to amount for every plant in inventory
         }
         return amount;
     }

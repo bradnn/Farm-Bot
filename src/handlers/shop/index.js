@@ -1,12 +1,16 @@
 const { cropShopHandler } = require("../cropFarm/Shop");
+const { treeShopHandler } = require("../treeFarm/Shop");
 
 const handleShopCommand = async (client, msg, args) => {
     if(args[0]) {
         switch(args[0]) {
             case "crops":
             case "crop":
-            case "farm":
                 cropShopHandler(client, msg, args);
+                return;
+            case "trees":
+            case "tree":
+                treeShopHandler(client, msg, args);
                 return;
         }
     }
@@ -19,7 +23,8 @@ const handleShopCommand = async (client, msg, args) => {
         fields: [
             {
                 name: `Markets`,
-                value: `Farming **-** \`${client.config.PREFIX}shop crop\``
+                value: `Crop Farming **-** \`${client.config.PREFIX}shop crop\`
+Tree Farming **-** \`${client.config.PREFIX}shop tree`
             }
         ]
     }

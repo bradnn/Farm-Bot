@@ -16,15 +16,23 @@ module.exports = {
             });
         }
         var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices");
-        var toolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
+        var cropToolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
+        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices");
+        var treeToolPrices = require("../../../handlers/treeFarm/Shop/Prices/toolPrices");
 
         var cropItems = Object.keys(cropPrices.prices);
-        var toolItems = Object.keys(toolPrices.prices);
+        var cropToolItems = Object.keys(cropToolPrices.prices);
+        var treeItems = Object.keys(treePrices.prices);
+        var treeToolItems = Object.keys(treeToolPrices.prices);
 
         if (cropItems.includes(item)) {
-            x.inventory.crops[item] = x.inventory.crops[item] + amount;
-        } else {
-            x.inventory.items[item] = x.inventory.items[item] + amount;
+            x.inventory.farms.crops[item] = x.inventory.farms.crops[item] + amount;
+        } else if (cropToolItems.includes(item)) {
+            x.inventory.items.farmTools.crops[item] = x.inventory.items.farmTools.crops[item] + amount;
+        } else if (treeItems.includes(item)) {
+            x.inventory.farms.trees[item] = x.inventory.farms.trees[item] + amount;
+        } else if (treeToolItems.includes(item)) {
+            x.inventory.items.farmTools.trees[item] = x.inventory.items.farmTools.crops[item] + amount;
         }
 
         x.save();
@@ -46,15 +54,23 @@ module.exports = {
         }
 
         var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices");
-        var toolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
+        var cropToolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
+        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices");
+        var treeToolPrices = require("../../../handlers/treeFarm/Shop/Prices/toolPrices");
 
         var cropItems = Object.keys(cropPrices.prices);
-        var toolItems = Object.keys(toolPrices.prices);
+        var cropToolItems = Object.keys(cropToolPrices.prices);
+        var treeItems = Object.keys(treePrices.prices);
+        var treeToolItems = Object.keys(treeToolPrices.prices);
 
         if (cropItems.includes(item)) {
-            x.inventory.crops[item] = x.inventory.crops[item] - amount;
-        } else {
-            x.inventory.items[item] = x.inventory.items[item] - amount;
+            x.inventory.farms.crops[item] = x.inventory.farms.crops[item] - amount;
+        } else if (cropToolItems.includes(item)) {
+            x.inventory.items.farmTools.crops[item] = x.inventory.items.farmTools.crops[item] - amount;
+        } else if (treeItems.includes(item)) {
+            x.inventory.farms.trees[item] = x.inventory.farms.trees[item] - amount;
+        } else if (treeToolItems.includes(item)) {
+            x.inventory.items.farmTools.trees[item] = x.inventory.items.farmTools.crops[item] - amount;
         }
         x.save();
         return x;
@@ -77,15 +93,23 @@ module.exports = {
         var itemCount;
 
         var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices");
-        var toolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
+        var cropToolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
+        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices");
+        var treeToolPrices = require("../../../handlers/treeFarm/Shop/Prices/toolPrices");
 
         var cropItems = Object.keys(cropPrices.prices);
-        var toolItems = Object.keys(toolPrices.prices);
+        var cropToolItems = Object.keys(cropToolPrices.prices);
+        var treeItems = Object.keys(treePrices.prices);
+        var treeToolItems = Object.keys(treeToolPrices.prices);
 
         if (cropItems.includes(item)) {
-            itemCount = x.inventory.crops[item];
-        } else {
-            itemCount = x.inventory.items[item];
+            itemCount = x.inventory.farms.crops[item];
+        } else if (cropToolItems.includes(item)) {
+            itemCount = x.inventory.items.farmTools.crops[item];
+        } else if (treeItems.includes(item)) {
+            itemCount = x.inventory.farms.trees[item];
+        } else if (treeToolItems.includes(item)) {
+            itemCount = x.inventory.items.farmTools.crops[item];
         }
         return itemCount;
 
