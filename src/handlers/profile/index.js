@@ -1,21 +1,22 @@
-const { cropGetCrops } = require("../../utils/farm/crop/user");
 const { formatItems } = require("../../utils/format/itemUtils");
 const { formatMoney } = require("../../utils/format/moneyUtils");
 const { getProfile } = require("../../utils/user/user");
+const { CropUtils } = require('../crops/utils');
+const { TreeUtils } = require('../trees/utils');
 
 const handleInventoryCommand = async (client, msg, args) => {
     let user = msg.mentions[0] || client.users.get(args[0]);
     if (!user) user = msg.author;
 
-    var crops = await cropGetCrops(user.id);
+    var crops = await CropUtils.getCrops(user.id);
     var profile = await getProfile(user.id);
 
     if(args[0]) {
         switch(args[0]) {
             case "crops":
             case "farm":
-                var farmPrices = require("../../handlers/cropFarm/Shop/Prices/farmPrices");
-                var toolPrice = require("../../handlers/cropFarm/Shop/Prices/toolPrices");
+                var farmPrices = CropUtils.getPrices("crops");
+                var toolPrice = CropUtils.getPrices("items");
 
                 var cropList = ``
                 var itemList = ``
@@ -49,8 +50,8 @@ const handleInventoryCommand = async (client, msg, args) => {
                 return;
             case "trees":
             case "tree":
-                var farmPrices = require("../../handlers/treeFarm/Shop/Prices/farmPrices");
-                var toolPrice = require("../../handlers/treeFarm/Shop/Prices/toolPrices");
+                var farmPrices = TreeUtils.getPrices("crops");
+                var toolPrice = TreeUtils.getPrices("items");
 
                 var cropList = ``
                 var itemList = ``
@@ -102,7 +103,8 @@ const handleInventoryCommand = async (client, msg, args) => {
             }, 
             {
                 name: `Farming Categories`,
-                value: `Crops **-** \`${client.config.PREFIX}inventory crops\``
+                value: `Crops **-** \`${client.config.PREFIX}inventory crops\`
+Trees **-** \`${client.config.PREFIX}inventory trees\``
             }
         ]
     }

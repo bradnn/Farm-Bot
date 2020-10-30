@@ -14,11 +14,11 @@ module.exports = {
             this.events = new Eris.Collection();
             this.aliases = new Eris.Collection();
 
-            this.loadCommands(this);
-            this.loadEvents(this);
+            this._loadCommands(this);
+            this._loadEvents(this);
         };
 
-        loadCommands(client) {
+        _loadCommands(client) {
             glob(`${process.cwd()}/src/commands/**/*.js`).then(commands => {
                 for (const commandFile of commands) {
                     const { name } = parse(commandFile);
@@ -34,7 +34,7 @@ module.exports = {
             });
         }
 
-        loadEvents(client) {
+        _loadEvents(client) {
             glob(`${process.cwd()}/src/events/**/*.js`).then(events => {
                 for (const eventFile of events) {
                     const { name } = parse(eventFile);

@@ -1,16 +1,16 @@
-const { cropShopHandler } = require("../cropFarm/Shop");
-const { treeShopHandler } = require("../treeFarm/Shop");
+const { CropShop } = require("../crops/Shop");
+const { TreeShop } = require('../trees/Shop/index');
 
 const handleShopCommand = async (client, msg, args) => {
     if(args[0]) {
         switch(args[0]) {
             case "crops":
             case "crop":
-                cropShopHandler(client, msg, args);
+                CropShop.handleShop(client, msg, args);
                 return;
             case "trees":
             case "tree":
-                treeShopHandler(client, msg, args);
+                TreeShop.handleShop(client, msg, args);
                 return;
         }
     }

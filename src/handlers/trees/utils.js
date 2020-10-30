@@ -1,7 +1,13 @@
-const profile = require("../../../schemas/ProfileSchema");
+const profile = require("../../schemas/ProfileSchema")
 
-module.exports = {
-    treeGetFarm: async function (userID) {
+module.exports.TreeUtils = {
+    getPrices: function (type) {
+        if(!type) return require('./Shop/Prices/farmPrices');
+        if(type == "crops" || type == "crop") return require('./Shop/Prices/farmPrices');
+        else if(type == "items" || type == "item") return require('./Shop/Prices/toolPrices');
+        else return require('./Shop/Prices/farmPrices');
+    },
+    getFarm: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -16,7 +22,7 @@ module.exports = {
         };
         return x.farms.trees; // Returns planted trees
     },
-    treeGetCrops: async function (userID) {
+    getCrops: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) {
             if (err) throw err; // Throwing if error
             if(res) {
@@ -31,7 +37,7 @@ module.exports = {
         }
         return x.inventory.farms.trees; // Returns inventory trees
     },
-    treeDelPlants: async function (userID, type, amount) {
+    delPlants: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -52,7 +58,7 @@ module.exports = {
 
         return x.farms.trees; // Returns trees crops
     },
-    treeAddTrees: async function (userID, trees) {
+    addInventory: async function (userID, obj) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -65,28 +71,19 @@ module.exports = {
                 userID: userID
             });
         }
-        if(trees.maple) { // If provided obj has maple
-            x.inventory.farms.trees.maple = x.inventory.farms.trees.maple + trees.maple;
-        }
-        if(trees.pine) { // If provided obj has pine
-            x.inventory.farms.trees.pine = x.inventory.farms.trees.pine + trees.pine;
-        }
-        if(trees.fir) { // If provided obj has fir
-            x.inventory.farms.trees.fir = x.inventory.farms.trees.fir + trees.fir;
-        }
-        if(trees.aspen) { // If provided obj has aspen
-            x.inventory.farms.trees.aspen = x.inventory.farms.trees.aspen + trees.aspen;
-        }
-        if(trees.oak) { // If provided obj has oak
-            x.inventory.farms.trees.oak = x.inventory.farms.trees.oak + trees.oak;
-        }
-        if(trees.birch) { // If provided obj has birch
-            x.inventory.farms.trees.birch = x.inventory.farms.trees.birch + trees.birch;
+
+        var keys = Object.keys(obj);
+        var added = 0;
+        console.log(keys);
+
+        for(type in keys) {
+            x.inventory.farms.trees[keys[type]] += obj[keys[type]];
+            added += obj[keys[type]];
         }
         x.save(); // Save to database
-        return trees.maple + trees.pine + trees.fir + trees.aspen + trees.oak + trees.birch; // Returns all items added together
+        return added; // Returns all items added together
     },
-    treePlant: async function (userID, tree, amount) {
+    plant: async function (userID, type, amount) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -98,12 +95,12 @@ module.exports = {
                 userID: userID
             });
         }
-        x.inventory.farms.trees[tree] = x.inventory.farms.trees[tree] - amount; // Removes trees from inventory
-        x.farms.trees[tree] = x.farms.trees[tree] + amount; // Adds amount to planted crops
+        x.inventory.farms.trees[type] = x.inventory.farms.trees[type] - amount; // Removes trees from inventory
+        x.farms.trees[type] = x.farms.trees[type] + amount; // Adds amount to planted crops
         x.save(); // Save to database
-        return x.farms.trees[tree]; // Returns new amount
+        return x.farms.trees[type]; // Returns new amount
     },
-    treePlantAll: async function (userID) {
+    plantAll: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -116,7 +113,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices"); // Gets obj of items
+        var treePrices = require("./Shop/Prices/farmPrices"); // Gets obj of items
         var treeItems = Object.keys(treePrices.prices); // Returns only item names in array
         var itemPrices = { ...treeItems}; // Useless but like still here
         var plantedCount = 0; 
@@ -128,7 +125,7 @@ module.exports = {
         x.save(); // Save to database
         return plantedCount;
     },
-    treeSellAll: async function (userID) {
+    sellAll: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -141,7 +138,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var treePrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
+        var treePrices = require("./Shop/Prices/farmPrices"); // Gets obj of items
         var treeItems = Object.keys(treePrices.prices); // Returns only item names in array
         var itemPrices = { ...treeItems}; // Useless but like still here
         var moneyToAdd = 0;
@@ -153,7 +150,7 @@ module.exports = {
         x.save(); // Save to database
         return;
     },
-    treeHarvest: async function (userID) {
+    harvest: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -166,7 +163,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices"); // Gets obj of items
+        var treePrices = require("./Shop/Prices/farmPrices"); // Gets obj of items
         var treeItems = Object.keys(treePrices.prices); // Returns only item names in array
         var itemPrices = { ...treeItems}; // Useless but like still here
         var harvestCount = 0; 
@@ -178,7 +175,7 @@ module.exports = {
         x.save(); // Save to database
         return harvestCount;
     },
-    treeAddSawUse: async function (userID) {
+    addAxeUse: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -191,18 +188,18 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.uses.tractor >= 5) {
-            x.inventory.items.farmTools.trees.chainsaw = x.inventory.items.farmTools.trees.chainsaw - 1; // Remove tractor from inventory
-            x.uses.chainsaw = 0; // Resets tractor uses
+        if(x.uses.axe >= 5) {
+            x.inventory.items.farmTools.trees.axe = x.inventory.items.farmTools.trees.axe - 1; // Remove tractor from inventory
+            x.uses.axe = 0; // Resets tractor uses
             x.save(); // Save to database
             return "broke"; // Returns broke
         } else {
-            x.uses.chainsaw = x.uses.chainsaw + 1; // Adds tractor use
+            x.uses.axe = x.uses.axe + 1; // Adds tractor use
             x.save(); // Save to database
         }
         return;
     },
-    treeGetSaws: async function (userID) {
+    getAxes: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -215,9 +212,9 @@ module.exports = {
                 userID: userID
             });
         }
-        return x.inventory.items.farmTools.trees.chainsaw;
+        return x.inventory.items.farmTools.trees.axe;
     },
-    treeAddSawed: async function (userID) {
+    addAxed: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -230,13 +227,13 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.farm.trees.sawed == false) { // if the farm isnt sawed
-            x.farm.trees.sawed = true; // saw trees
+        if(x.farms.trees.axed == false) { // if the farm isnt axed
+            x.farms.trees.axed = true; // saw axed
         }
         x.save(); // Save to database
         return x;
     },
-    treeDelSawed: async function (userID) {
+    delAxed: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -249,13 +246,13 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.farm.trees.sawed == true) { // if the farm is sawed
-            x.farm.trees.sawed = false; // unsaw? farm
+        if(x.farms.trees.axed == true) { // if the farm is axed
+            x.farms.trees.axed = false; // unaxe? farm
         }
         x.save(); // Save to database
         return x;
     },
-    treeGetSawed: async function (userID) {
+    getAxed: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -268,13 +265,13 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.farms.trees.sawed == true) {
+        if(x.farms.trees.axed == true) {
             return true;
         } else {
             return false;
         }
     },
-    treeAddSprayed: async function (userID) {
+    getSprays: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -287,13 +284,9 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.farm.trees.sprayed == false) { // if the farm isnt sprayed
-            x.farm.trees.sprayed = true; // spray farm
-        }
-        x.save();
-        return x;
+        return x.inventory.items.farmTools.trees.bugspray;
     },
-    treeDelSprayed: async function (userID) {
+    addSprayed: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -306,13 +299,32 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.farm.trees.sprayed == true) { // if the farm is sprayed
-            x.farm.trees.sprayed = false; // unspray farm
+        if(x.farms.trees.sprayed == false) { // if the farm isnt sprayed
+            x.farms.trees.sprayed = true; // spray farm
         }
         x.save();
         return x;
     },
-    treeGetSprayed: async function (userID) {
+    delSprayed: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farms.trees.sprayed == true) { // if the farm is sprayed
+            x.farms.trees.sprayed = false; // unspray farm
+        }
+        x.save();
+        return x;
+    },
+    getSprayed: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -331,7 +343,7 @@ module.exports = {
             return false;
         }
     },
-    treeAddSprayUse: async function (userID) {
+    addSprayUse: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -355,7 +367,7 @@ module.exports = {
         }
         return;
     },
-    treeGetSpray: async function (userID) {
+    getSprayed: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -370,7 +382,7 @@ module.exports = {
         }
         return x.inventory.items.farmTools.trees.sprayed;
     },
-    treeGetFarmCount: async function (userID) {
+    getFarmCount: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -383,7 +395,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices"); // Gets prices from obj
+        var treePrices = require("./Shop/Prices/farmPrices"); // Gets prices from obj
         var treeItems = Object.keys(treePrices.prices); // Gets item names only
         var itemPrices = { ...treeItems}; // Does nothing but like
         var amount = 0; 
@@ -393,7 +405,7 @@ module.exports = {
         }
         return amount;
     },
-    treeGetInvenCount: async function (userID) {
+    getInvenCount: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -406,7 +418,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices"); // Gets prices from obj
+        var treePrices = require("./Shop/Prices/farmPrices"); // Gets prices from obj
         var treeItems = Object.keys(treePrices.prices); // Gets item names only
         var itemPrices = { ...treeItems}; // Does nothing but like
         var amount = 0;

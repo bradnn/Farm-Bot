@@ -2,7 +2,8 @@ const { getProfile, setCooldown } = require("../../utils/user/user");
 const { msToTime } = require("../../utils/format/timeUtils");
 
 const cooldowns = {
-    cropHarvest: 120000
+    cropHarvest: 120000,
+    treeHarvest: 120000
 }
 
 const generateCooldownEmbed = (username, type, remaining) => {
@@ -24,8 +25,18 @@ const getCooldown = async (type, user) => {
     let userCooldowns = userProfile.cooldowns;
     var cooldown;
 
-    if(userProfile.farms.crops.fertilized == true) {
-        cooldown = cooldowns[type] / 2
+    if(type == "cropHarvest") {
+        if(userProfile.farms.crops.fertilized == true) {
+            cooldown = cooldowns[type] / 2
+        } else {
+            cooldown = cooldowns[type]
+        }
+    } else if (type == "treeHarvest") {
+        if(userProfile.farms.trees.axed == true) {
+            cooldown = cooldowns[type] / 2
+        } else {
+            cooldown = cooldowns[type]
+        }
     } else {
         cooldown = cooldowns[type]
     }
@@ -56,8 +67,18 @@ const onCooldown = async (type, user) => {
     let userCooldowns = userProfile.cooldowns;
     var cooldown;
 
-    if(userProfile.farms.crops.fertilized == true) {
-        cooldown = cooldowns[type] / 2
+    if(type == "cropHarvest") {
+        if(userProfile.farms.crops.fertilized == true) {
+            cooldown = cooldowns[type] / 2
+        } else {
+            cooldown = cooldowns[type]
+        }
+    } else if (type == "treeHarvest") {
+        if(userProfile.farms.trees.axed == true) {
+            cooldown = cooldowns[type] / 2
+        } else {
+            cooldown = cooldowns[type]
+        }
     } else {
         cooldown = cooldowns[type]
     }

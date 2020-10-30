@@ -1,5 +1,5 @@
-const { handleCropSell } = require("../../utils/farm/crop/shop");
-const { handleTreeSell } = require("../../utils/farm/tree/shop");
+const { CropShop } = require("../crops/Shop");
+const { TreeShop } = require("../trees/Shop");
 
 const handleSellCommand = async (client, msg, args) => {
     let item = args[0];
@@ -11,23 +11,23 @@ const handleSellCommand = async (client, msg, args) => {
 
     // CROP FARMING REQUIREMENTS
 
-    var cropPrices = require("../cropFarm/Shop/Prices/farmPrices");
-    var cropTools = require("../cropFarm/Shop/Prices/toolPrices");
+    var cropPrices = require("../crops/Shop/Prices/farmPrices");
+    var cropTools = require("../crops/Shop/Prices/toolPrices");
     cropPrices = Object.keys(cropPrices.prices);
     cropTools = Object.keys(cropTools.prices);
 
     // TREE FARMING REQUIREMENTS
 
-    var treePrices = require("../treeFarm/Shop/Prices/farmPrices");
-    var treeTools = require("../treeFarm/Shop/Prices/toolPrices");
+    var treePrices = require("../trees/Shop/Prices/farmPrices");
+    var treeTools = require("../trees/Shop/Prices/toolPrices");
     treePrices = Object.keys(treePrices.prices);
     treeTools = Object.keys(treeTools.prices);
 
     if (cropPrices.includes(item) || cropTools.includes(item)) {
-        handleCropSell(msg.author, item, amount, msg);
+        CropShop.handleSell(msg.author, item, amount, msg);
         return;
     } else if (treePrices.includes(item) || treeTools.includes(item)) {
-        handleTreeSell(msg.author, item, amount, msg);
+        TreeShop.handleSell(msg.author, item, amount, msg);
         return;
     } else {
         msg.channel.createMessage(`This is not a valid item!`);

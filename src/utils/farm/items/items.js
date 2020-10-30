@@ -15,10 +15,10 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices");
-        var cropToolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
-        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices");
-        var treeToolPrices = require("../../../handlers/treeFarm/Shop/Prices/toolPrices");
+        var cropPrices = require("../../../handlers/crops/Shop/Prices/farmPrices");
+        var cropToolPrices = require("../../../handlers/crops/Shop/Prices/toolPrices");
+        var treePrices = require("../../../handlers/trees/Shop/Prices/farmPrices");
+        var treeToolPrices = require("../../../handlers/trees/Shop/Prices/toolPrices");
 
         var cropItems = Object.keys(cropPrices.prices);
         var cropToolItems = Object.keys(cropToolPrices.prices);
@@ -53,10 +53,10 @@ module.exports = {
             });
         }
 
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices");
-        var cropToolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
-        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices");
-        var treeToolPrices = require("../../../handlers/treeFarm/Shop/Prices/toolPrices");
+        var cropPrices = require("../../../handlers/crops/Shop/Prices/farmPrices");
+        var cropToolPrices = require("../../../handlers/crops/Shop/Prices/toolPrices");
+        var treePrices = require("../../../handlers/trees/Shop/Prices/farmPrices");
+        var treeToolPrices = require("../../../handlers/trees/Shop/Prices/toolPrices");
 
         var cropItems = Object.keys(cropPrices.prices);
         var cropToolItems = Object.keys(cropToolPrices.prices);
@@ -92,10 +92,10 @@ module.exports = {
 
         var itemCount;
 
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices");
-        var cropToolPrices = require("../../../handlers/cropFarm/Shop/Prices/toolPrices");
-        var treePrices = require("../../../handlers/treeFarm/Shop/Prices/farmPrices");
-        var treeToolPrices = require("../../../handlers/treeFarm/Shop/Prices/toolPrices");
+        var cropPrices = require("../../../handlers/crops/Shop/Prices/farmPrices");
+        var cropToolPrices = require("../../../handlers/crops/Shop/Prices/toolPrices");
+        var treePrices = require("../../../handlers/trees/Shop/Prices/farmPrices");
+        var treeToolPrices = require("../../../handlers/trees/Shop/Prices/toolPrices");
 
         var cropItems = Object.keys(cropPrices.prices);
         var cropToolItems = Object.keys(cropToolPrices.prices);

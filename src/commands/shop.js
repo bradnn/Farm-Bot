@@ -1,4 +1,4 @@
-const { cropCommandHandler } = require("../handlers/cropFarm");
+
 const { handleShopCommand } = require("../handlers/shop");
 
 module.exports = class {

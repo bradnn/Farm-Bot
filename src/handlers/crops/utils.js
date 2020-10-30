@@ -1,7 +1,13 @@
-const profile = require("../../../schemas/ProfileSchema");
+const profile = require("../../schemas/ProfileSchema")
 
-module.exports = {
-    cropGetFarm: async function (userID) {
+module.exports.CropUtils = {
+    getPrices: function (type) {
+        if(!type) return require('./Shop/Prices/farmPrices');
+        if(type == "crops" || type == "crop") return require('./Shop/Prices/farmPrices');
+        else if(type == "items" || type == "item") return require('./Shop/Prices/toolPrices');
+        else return require('./Shop/Prices/farmPrices');
+    },
+    getFarm: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -16,7 +22,7 @@ module.exports = {
         };
         return x.farms.crops; // Returns planted crops
     },
-    cropGetCrops: async function (userID) {
+    getCrops: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) {
             if (err) throw err; // Throwing if error
             if(res) {
@@ -31,7 +37,7 @@ module.exports = {
         }
         return x.inventory.farms.crops; // Returns inventory crops
     },
-    cropDelPlants: async function (userID, type, amount) {
+    delPlants: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -50,9 +56,9 @@ module.exports = {
         }
         x.save(); // Save to database
 
-        return x.farms.crops; // Returns farm crops
+        return x.farms.crops; // Returns crops crops
     },
-    cropAddCrops: async function (userID, crops) {
+    addInventory: async function (userID, obj) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -65,31 +71,18 @@ module.exports = {
                 userID: userID
             });
         }
-        if(crops.wheat) { // If provided obj has wheat
-            x.inventory.farms.crops.wheat = x.inventory.farms.crops.wheat + crops.wheat;
-        }
-        if(crops.melon) { // If provided obj has melon
-            x.inventory.farms.crops.melon = x.inventory.farms.crops.melon + crops.melon;
-        }
-        if(crops.pumpkin) { // If provided obj has pumpkin
-            x.inventory.farms.crops.pumpkin = x.inventory.farms.crops.pumpkin + crops.pumpkin;
-        }
-        if(crops.strawberry) { // If provided obj has strawberry
-            x.inventory.farms.crops.strawberry = x.inventory.farms.crops.strawberry + crops.strawberry;
-        }
-        if(crops.coffee) { // If provided obj has coffee
-            x.inventory.farms.crops.coffee = x.inventory.farms.crops.coffee + crops.coffee;
-        }
-        if(crops.peach) { // If provided obj has peach
-            x.inventory.farms.crops.peach = x.inventory.farms.crops.peach + crops.peach;
-        }
-        if(crops.apple) { // If provided obj has apple
-            x.inventory.farms.crops.apple = x.inventory.farms.crops.apple + crops.apple;
+
+        var keys = Object.keys(obj);
+        var added = 0;
+
+        for(type in keys) {
+            x.inventory.farms.crops[keys[type]] += obj[keys[type]];
+            added += obj[keys[type]];
         }
         x.save(); // Save to database
-        return crops.wheat + crops.melon + crops.pumpkin + crops.strawberry + crops.coffee + crops.peach + crops.apple; // Returns all items added together
+        return added; // Returns all items added together
     },
-    cropPlant: async function (userID, crop, amount) {
+    plant: async function (userID, type, amount) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -101,12 +94,12 @@ module.exports = {
                 userID: userID
             });
         }
-        x.inventory.farms.crops[crop] = x.inventory.farms.crops[crop] - amount; // Removes crops from inventory
-        x.farms.crops[crop] = x.farms.crops[crop] + amount; // Adds amount to planted crops
+        x.inventory.farms.crops[type] = x.inventory.farms.crops[type] - amount; // Removes crops from inventory
+        x.farms.crops[type] = x.farms.crops[type] + amount; // Adds amount to planted crops
         x.save(); // Save to database
-        return x.farms.crops[crop]; // Returns new amount
+        return x.farms.crops[type]; // Returns new amount
     },
-    cropPlantAll: async function (userID) {
+    plantAll: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -119,7 +112,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
+        var cropPrices = require("./Shop/Prices/farmPrices"); // Gets obj of items
         var cropItems = Object.keys(cropPrices.prices); // Returns only item names in array
         var itemPrices = { ...cropItems}; // Useless but like still here
         var plantedCount = 0; 
@@ -131,7 +124,7 @@ module.exports = {
         x.save(); // Save to database
         return plantedCount;
     },
-    cropSellAll: async function (userID) {
+    sellAll: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -144,7 +137,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
+        var cropPrices = require("./Shop/Prices/farmPrices"); // Gets obj of items
         var cropItems = Object.keys(cropPrices.prices); // Returns only item names in array
         var itemPrices = { ...cropItems}; // Useless but like still here
         var moneyToAdd = 0;
@@ -156,7 +149,7 @@ module.exports = {
         x.save(); // Save to database
         return;
     },
-    cropHarvest: async function (userID) {
+    harvest: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -169,7 +162,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets obj of items
+        var cropPrices = require("./Shop/Prices/farmPrices"); // Gets obj of items
         var cropItems = Object.keys(cropPrices.prices); // Returns only item names in array
         var itemPrices = { ...cropItems}; // Useless but like still here
         var harvestCount = 0; 
@@ -181,7 +174,7 @@ module.exports = {
         x.save(); // Save to database
         return harvestCount;
     },
-    cropAddFertilize: async function (userID) {
+    addTractorUse: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -194,13 +187,18 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.farm.crops.fertilized == false) { // if the farm isnt fertilized
-            x.farm.crops.fertilized = true; // fertilize farm
+        if(x.uses.axe >= 5) {
+            x.inventory.items.farmTools.crops.tractor = x.inventory.items.farmTools.crops.tractor - 1; // Remove tractor from inventory
+            x.uses.tractor = 0; // Resets tractor uses
+            x.save(); // Save to database
+            return "broke"; // Returns broke
+        } else {
+            x.uses.tractor = x.uses.tractor + 1; // Adds tractor use
+            x.save(); // Save to database
         }
-        x.save(); // Save to database
-        return x;
+        return;
     },
-    cropDelFertilize: async function (userID) {
+    getTractors: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -213,13 +211,47 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.farm.crops.fertilized == true) { // if the farm is fertilized
-            x.farm.crops.fertilized = false; // unfertilize farm
+        return x.inventory.items.farmTools.crops.tractor;
+    },
+    addFertilized: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farms.crops.fertilized == false) { // if the farm isnt axed
+            x.farms.crops.fertilized = true; // saw axed
         }
         x.save(); // Save to database
         return x;
     },
-    cropGetFertilized: async function (userID) {
+    delFertilized: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farms.crops.fertilized == true) { // if the farm is axed
+            x.farms.crops.fertilized = false; // unaxe? farm
+        }
+        x.save(); // Save to database
+        return x;
+    },
+    getFertilized: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -238,7 +270,7 @@ module.exports = {
             return false;
         }
     },
-    cropAddProtected: async function (userID) {
+    getScarecrows: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -251,13 +283,28 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.farm.crops.protected == false) { // if the farm isnt protected
-            x.farm.crops.protected = true; // protect farm
+        return x.inventory.items.farmTools.crops.scarecrow;
+    },
+    addProtected: async function (userID) {
+        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
+            if (err) throw err; // Throwing if error
+            if(res) {
+                return res; // Letting x = obj;
+            }
+        })
+
+        if(!x) { // If user obj didnt exist
+            x = await profile.create({ // Creating profile obj
+                userID: userID
+            });
+        }
+        if(x.farms.crops.protected == false) { // if the farm isnt sprayed
+            x.farms.crops.protected = true; // spray farm
         }
         x.save();
         return x;
     },
-    cropDelProtected: async function (userID) {
+    delProtected: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -270,52 +317,13 @@ module.exports = {
                 userID: userID
             });
         }
-        if(x.farm.crops.protected == true) { // if the farm is protected
-            x.farm.crops.protected = false; // unprotect farm
+        if(x.farms.crops.protected == true) { // if the farm is sprayed
+            x.farms.crops.protected = false; // unspray farm
         }
         x.save();
         return x;
     },
-    cropAddTractorUse: async function (userID) {
-        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
-            if (err) throw err; // Throwing if error
-            if(res) {
-                return res; // Letting x = obj;
-            }
-        })
-
-        if(!x) { // If user obj didnt exist
-            x = await profile.create({ // Creating profile obj
-                userID: userID
-            });
-        }
-        if(x.uses.tractor >= 5) {
-            x.inventory.items.farmTools.tractor = x.inventory.items.farmTools.tractor - 1; // Remove tractor from inventory
-            x.uses.tractor = 0; // Resets tractor uses
-            x.save(); // Save to database
-            return "broke"; // Returns broke
-        } else {
-            x.uses.tractor = x.uses.tractor + 1; // Adds tractor use
-            x.save(); // Save to database
-        }
-        return;
-    },
-    cropGetTractors: async function (userID) {
-        let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
-            if (err) throw err; // Throwing if error
-            if(res) {
-                return res; // Letting x = obj;
-            }
-        })
-
-        if(!x) { // If user obj didnt exist
-            x = await profile.create({ // Creating profile obj
-                userID: userID
-            });
-        }
-        return x.inventory.items.farmTools.tractor;
-    },
-    cropGetProtected: async function (userID) {
+    getProtected: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -334,7 +342,7 @@ module.exports = {
             return false;
         }
     },
-    cropAddScarecrowUse: async function (userID) {
+    addScarecrowUse: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -348,7 +356,7 @@ module.exports = {
             });
         }
         if(x.uses.scarecrow >= 5) {
-            x.inventory.items.farmTools.scarecrow = x.inventory.items.farmTools.scarecrow - 1; // Removes 1 scarecrow from inventory
+            x.inventory.items.farmTools.crops.scarecrow = x.inventory.items.farmTools.crops.scarecrow - 1; // Removes 1 scarecrow from inventory
             x.uses.scarecrow = 0; // Resets uses
             x.save(); // Save to database
             return "broke"; // Returns broke
@@ -358,7 +366,7 @@ module.exports = {
         }
         return;
     },
-    cropGetScarecrows: async function (userID) {
+    getProtected: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -371,9 +379,9 @@ module.exports = {
                 userID: userID
             });
         }
-        return x.inventory.items.farmTools.scarecrow;
+        return x.inventory.items.farmTools.crops.protected;
     },
-    cropGetFarmCount: async function (userID) {
+    getFarmCount: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -386,7 +394,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets prices from obj
+        var cropPrices = require("./Shop/Prices/farmPrices"); // Gets prices from obj
         var cropItems = Object.keys(cropPrices.prices); // Gets item names only
         var itemPrices = { ...cropItems}; // Does nothing but like
         var amount = 0; 
@@ -396,7 +404,7 @@ module.exports = {
         }
         return amount;
     },
-    cropGetInvenCount: async function (userID) {
+    getInvenCount: async function (userID) {
         let x = await profile.findOne({ userID: userID}, async function (err, res) { // Requesting User Object
             if (err) throw err; // Throwing if error
             if(res) {
@@ -409,7 +417,7 @@ module.exports = {
                 userID: userID
             });
         }
-        var cropPrices = require("../../../handlers/cropFarm/Shop/Prices/farmPrices"); // Gets prices from obj
+        var cropPrices = require("./Shop/Prices/farmPrices"); // Gets prices from obj
         var cropItems = Object.keys(cropPrices.prices); // Gets item names only
         var itemPrices = { ...cropItems}; // Does nothing but like
         var amount = 0;

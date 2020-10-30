@@ -1,4 +1,4 @@
-const { cropCommandHandler } = require("../handlers/cropFarm")
+const { CropHandlers } = require("../handlers/crops/handlers");
 
 module.exports = class {
     constructor() {
@@ -8,7 +8,7 @@ module.exports = class {
 
     async run(client, msg, args) {
 
-        var handle = await cropCommandHandler(client, msg, args);
+        var handle = await CropHandlers.handler(client, msg, args);
         return handle;
 
     }

@@ -5,7 +5,11 @@ const profileSchema = mongoose.Schema({
     econ: {
         balance: {
             type: Number,
-            default: 2500
+            default: 500
+        },
+        gems: {
+            type: Number,
+            default: 0
         },
         payment: {
             payAmount: {
@@ -90,7 +94,7 @@ const profileSchema = mongoose.Schema({
                     }
                 },
                 trees: {
-                    chainsaw: {
+                    axe: {
                         type: Number,
                         default: 0
                     },
@@ -110,7 +114,15 @@ const profileSchema = mongoose.Schema({
         scarecrow: {
             type: Number,
             default: 0
-        }
+        },
+        axe: {
+            type: Number,
+            default: 0
+        },
+        bugspray: {
+            type: Number,
+            default: 0
+        },
     },
     farms: {
         crops: {
@@ -160,7 +172,7 @@ const profileSchema = mongoose.Schema({
                 type: Number,
                 default: 0
             },
-            sawed: {
+            axed: {
                 type: Boolean,
                 default: 0
             },
