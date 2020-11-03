@@ -8,7 +8,6 @@ const handleInventoryCommand = async (client, msg, args) => {
     let user = msg.mentions[0] || client.users.get(args[0]);
     if (!user) user = msg.author;
 
-    var crops = await CropUtils.getCrops(user.id);
     var profile = await getProfile(user.id);
 
     if(args[0]) {
@@ -84,7 +83,6 @@ const handleInventoryCommand = async (client, msg, args) => {
                 msg.channel.createMessage({embed: treeEmbed});
                 return;
         }
-        return;
     }
 
     const inventoryEmbed = {

@@ -237,6 +237,14 @@ const profileSchema = mongoose.Schema({
                 default: 0
             }
         }
+    },
+    collections: {
+        raritys: {
+            royalGem: {
+                type: Number,
+                default: 0
+            }
+        }
     }
 });
 
